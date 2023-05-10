@@ -1,1 +1,192 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+using namespace std;
+//funÃ§Ã£o do menu de opÃ§Ãµes 
+char menu()
+{
+    char resp;
+    std::cout << "\n\nDigite 1 para inserir dados\n";
+    std::cout << "\n\nDigite 2 para listar dados\n";
+    std::cout << "\n\nDigite 3 para excluir dados\n";
+    std::cout << "\n\nDigite 0 para sair\n\n";
+    std::cout << "\nOpÃ§Ã£o:";
+    std::cin >> resp;
+    return resp;
+}
 
+class Pessoa {
+private:
+    std::string nome;
+    std::string cpf;
+    std::string email;
+    int idade;
+
+public:
+    std::string& getNome() { return nome; }
+    std::string& getCpf() { return cpf; }
+    std::string& getEmail() { return email; }
+    int& getIdade() { return idade; }
+
+    void setNome(std::string& nome) { this->nome = nome; }
+    void setCpf(std::string& cpf) { this->cpf = cpf; }
+    void setEmail(std::string& email) { this->email = email; }
+    void setIdade(int idade) { this->idade = idade; }
+
+
+//sobrecarga do operador de inserÃ§Ã£o de dados 
+//ostream (output stream)
+    friend std::ostream& operator<<(std::ostream& os, const Pessoa& p)
+    //escreve cada dado informado
+{
+        os << "\n" << p.nome << "\n";
+        os << "\n" << p.idade << "\n";
+        os << "\n" << p.cpf << "\n";
+        os << "\n" << p.email << "\n";
+        return os;
+    }
+
+
+//sobrecarga do operador de extraÃ§Ã£o de dados 
+//ifstream (input stream) -> (lÃª e interpreta sequencia de caracters)
+    friend std::istream& operator>>(std::istream& is, Pessoa& p)
+   //ler os dados 
+{
+        std::getline(is >> std::ws, p.nome);
+        is >> p.idade;
+        std::getline(is >> std::ws, p.cpf);
+        std::getline(is >> std::ws, p.email);
+        return is;
+    }
+};
+
+int main(int argc, char* argv[])
+{
+    char resp;
+    while (true) {
+        resp = menu();
+        system("clear||cls");
+        if (resp == '1') {
+            Pessoa pessoa;
+
+            std::string nome;
+            std::string cpf;
+            std::string email;
+            int idade;
+            
+
+          //ofstram ofs: abrir o arquivo txt
+            //app (append) adciona ao final do arquivo
+            std::ofstream ofs("arquivo.txt", std::fstream::app);
+
+          
+            std::cout << "\n\nInforme o nome: \n";
+            std::getline(std::cin >> std::ws, nome);
+          
+            std::cout << "\nInforme o idade:\n";
+            std::cin >> idade;
+          
+            std::cout << "\nInforme o CPF\n";
+            std::getline(std::cin >> std::ws, cpf);
+
+          
+            std::cout << "\nInforme o E-mail\n";
+            std::getline(std::cin >> std::ws, email);
+          
+            std::cout << std::endl;
+
+           //seta os dados 
+            pessoa.setNome(nome);
+            pessoa.setIdade(idade);
+            pessoa.setCpf(cpf);
+            pessoa.setEmail(email);
+
+            ofs << pessoa; //ofs: inserir ao arquivo
+
+           //ofs.close (fechar o arquivo)
+            ofs.close();
+        }
+
+           // comando para listar os dados 
+        else if (resp == '2') {
+            Pessoa p;
+            std::ifstream ifs("arquivo.txt");
+
+            std::cout << "Listando dados" << std::endl;
+
+            if (ifs.good()) // verifica se o arquivo existe e se Ã© possivel ler
+            {
+               while (!ifs.eof()){
+                 
+               
+                ifs >> p; // extrai os dados
+                  
+            //exibindo os dados 
+                  {
+                    std::cout << "\nNome:\n" << p.getNome() << "\n\n";
+                    std::cout << "\nIdade:\n" << p.getIdade() << "\n\n";
+                    std::cout << "\nCPF:\n" << p.getCpf() << "\n\n";
+                    std::cout << "\nE-mail:\n"<<p.getEmail()<<"\n\n";
+}
+           ifs.close();
+         }
+            }
+       
+         else{//exibiÃ§Ã£o de mensagem causo nÃ£o houver arquivo ou for impossivel lÃª-lo 
+
+           std::cout<<"Falha ao exibir arquivo";
+         }
+    }else if (resp == '3') {
+    std::string nome;
+    std::cout << "Digite o nome da pessoa a ser excluÃ­da: ";
+    std::getline(std::cin >> std::ws, nome);
+
+    std::ifstream ifs("arquivo.txt");
+    std::ofstream ofs("temp.txt");
+
+    Pessoa p;
+    bool encontrado = false;
+
+    if (ifs.good()) {
+        while (ifs >> p) {
+            if (p.getNome() == nome) {
+                encontrado = true;
+                std::cout << "Pessoa encontrada e excluÃ­da com sucesso!" << std::endl;
+            }
+            else {
+                ofs << p;
+            }
+        }
+        ifs.close();
+        ofs.close();
+
+        // Remove o arquivo antigo e renomeia o arquivo temporÃ¡rio
+        if (encontrado) {
+            remove("arquivo.txt");
+            rename("temp.txt", "arquivo.txt");
+        }
+        else {
+            remove("temp.txt");
+            std::cout << "Pessoa nÃ£o encontrada!" << std::endl;
+        }
+    }
+    else {
+        std::cout << "Falha ao exibir arquivo" << std::endl;
+    }
+}
+
+
+     else if(resp=='0'){
+
+       std:: cout<<"\n Conecte-se a: https://www.linkedin.com/in/ingrid-oliveira-a192b9181!\n";
+       break;
+     }
+
+    else{
+      std::cout<<"OpÃ§Ã£o invalida !";
+    }
+   
+  }
+
+  
+}
